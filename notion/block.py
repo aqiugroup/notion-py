@@ -644,9 +644,15 @@ class EmbedOrUploadBlock(EmbedBlock):
         ).json()
 
         with open(path, "rb") as f:
-            response = requests.put(
+            requests.adapters.DEFAULT_RETRIES = 5
+            s = requests.session()
+            s.keep_alive = False
+            response = s.put(
                 data["signedPutUrl"], data=f, headers={"Content-type": mimetype}
             )
+            # response = requests.put(
+            #     data["signedPutUrl"], data=f, headers={"Content-type": mimetype}
+            # )
             response.raise_for_status()
 
         self.display_source = data["url"]
